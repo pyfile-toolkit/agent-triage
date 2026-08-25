@@ -44,3 +44,9 @@ no frameworks, no build step — total ~250 lines.
 - `facebook/react` — 22 items scanned, 22/22 classified, priorities p1–p5
   (e.g. p1 bug: "Freezing props prevents later assignments…", p1 bug:
   "Unbounded debug info causes RangeError on large…")
+---
+## License
+MIT — see [LICENSE](LICENSE).
+
+## Architecture
+![architecture](docs/arch.png)
