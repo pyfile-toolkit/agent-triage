@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGENT // GitHub PR + Issue Triage</title>
+<style>
+:root{--bg:#0f1117;--card:#171a23;--line:#262b38;--txt:#e6e8ef;--muted:#8b93a7;--acc:#6d8dff;
+--bug:#ff5d5d;--feat:#4ade80;--q:#facc15;--dup:#a78bfa;--docs:#38bdf8;--prio:#fb7185}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:15px/1.5 system-ui,-apple-system,sans-serif;min-height:100vh}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px}
+h1{font-size:26px;letter-spacing:.2px}
+.sub{color:var(--muted);margin:8px 0 24px}
+.bar{display:flex;gap:10px;flex-wrap:wrap}
+input{flex:1;min-width:260px;background:var(--card);border:1px solid var(--line);color:var(--txt);
+border-radius:10px;padding:12px 14px;font-size:15px}
+button{background:var(--acc);border:0;color:#0b0e1a;font-weight:600;border-radius:10px;padding:12px 22px;cursor:pointer;font-size:15px}
+button:disabled{opacity:.5;cursor:wait}
+#status{color:var(--muted);margin-top:14px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.card .head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.badge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:6px}
+.c-bug{background:#3a1212;color:var(--bug)}.c-feature{background:#0d2b17;color:var(--feat)}
+.c-question{background:#2b2407;color:var(--q)}.c-duplicate{background:#22143f;color:var(--dup)}
+.c-docs{background:#0c2633;color:var(--docs)}.c-priority{background:#341018;color:var(--prio)}
+.card h3{font-size:14px;margin:10px 0 6px}
+.card p{color:var(--muted);font-size:13px}
+.card a{color:var(--acc);text-decoration:none;font-size:12px}
+.note{margin-top:18px;color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚡ AGENT // GitHub PR + Issue Triage</h1>
+  <p class="sub">An autonomous triage agent: reads open issues &amp; PRs, classifies them (bug / feature / question / duplicate / docs), flags priority, and proposes next actions. Runs in your browser shell with an async LLM worker.</p>
+  <div class="bar">
+    <input id="repo" placeholder="owner/repository — e.g. typeorm/typeorm" value="typeorm/typeorm" autocomplete="off">
+    <button id="go">Scan with agent</button>
+  </div>
+  <div id="status"></div>
+  <div id="grid" class="grid"></div>
+  <p class="note">Agent loop: fetch open items → per-item LLM classification → dashboard. Fully client-visible, no background jobs — everything happens on demand.</p>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const COLORS = { bug:'bug', feature:'feature', question:'question', duplicate:'duplicate', docs:'docs', priority:'priority' };
+$('#go').onclick = async () => {
+  const repo = $('#repo').value.trim();
+  if (!repo) return;
+  $('#go').disabled = true; $('#status').textContent = 'agent working…'; $('#grid').innerHTML = '';
+  try {
+    const r = await fetch('/api/agent?repo=' + encodeURIComponent(repo));
+    const d = await r.json();
+    if (d.error) { $('#status').textContent = 'error: ' + d.error; return; }
+    $('#status').textContent = `${d.scanned_issues} items scanned in ${d.repo}`;
+    $('#grid').innerHTML = d.results.length
+      ? d.results.map(it => `<div class="card"><div class="head"><span class="badge c-${COLORS[it.category]||'docs'}">${it.category||'?'} · p${it.priority||3}</span><a href="https://github.com/${repo}/issues/${it.number}" target="_blank">#${it.number}</a></div><h3>${it.title}</h3><p>${it.short||it.raw||''}</p></div>`).join('')
+      : '<p style="color:var(--muted)">no open items found</p>';
+  } catch (e) { $('#status').textContent = 'network error: ' + e.message; }
+  finally { $('#go').disabled = false; }
+};
+$('#repo').addEventListener('keydown', e => { if (e.key === 'Enter') $('#go').click(); });
+</script>
+</body>
+</html>
