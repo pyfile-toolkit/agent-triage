@@ -1,0 +1,28 @@
+{
+  "name": "agent-triage",
+  "version": "1.0.0",
+  "description": "An autonomous triage agent for open-source repos. Give it `owner/repository`, it reads the open issues & PRs, classifies each one with an LLM (bug / feature / question / duplicate / docs), assigns a priority (1–5), and renders an at-a-glance dashboard with suggested next actions.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pyfile-toolkit/agent-triage.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/pyfile-toolkit/agent-triage/issues"
+  },
+  "homepage": "https://github.com/pyfile-toolkit/agent-triage#readme",
+  "dependencies": {
+    "@strands-agents/sdk": "^1.14.0",
+    "openai": "^6.49.0"
+  }
+}
