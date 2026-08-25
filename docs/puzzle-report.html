@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Bitcoin 1000 BTC Puzzle in 2026</title>
+<meta name="description" content="Research summary: state, methods and honest economics of the 1000 BTC Bitcoin Puzzle, updated for 2026.">
+<style>body{font-family:system-ui,Segoe UI,Roboto,sans-serif;max-width:760px;margin:0 auto;padding:24px;line-height:1.6;color:#222}h1{font-size:1.6rem}h2{margin-top:1.6em;font-size:1.15rem}li{margin:.3em 0}p{margin:.6em 0}code{background:#f4f4f4;padding:1px 4px;border-radius:4px}</style>
+</head><body><h1>The Bitcoin 1000 BTC Puzzle in 2026: State, Methods, and the Honest Economics of Joining</h1>
+</p>
+<h2>TL;DR</h2>
+<p>The 2015 &quot;Bitcoin Puzzle&quot; (256→160 wallets, private keys hidden in ever-widening bit ranges) still holds <b>~900+ BTC across ~77–78 unsolved wallets</b> — about <b>$58–59M</b> at mid-2026 prices. The two live targets everyone is actually attacking are <b>Puzzle #71</b> (7.1 BTC, the lowest remaining target) and <b>Puzzle #140</b> (14 BTC). All payouts happen on-chain to whoever submits the private key — <b>no KYC, no platform, no escrow</b> — which is why it attracts an unusual mix of cryptographers, GPU farmers, and lottery players.</p>
+</p>
+<h2>What the puzzle actually is</h2>
+<p>In January 2015 an anonymous creator sent bitcoin to 256 addresses where the private key of wallet #N is randomly chosen in the range <b>2^(N−1) to 2^N</b> (a 1-bit key in wallet #1, a 2-bit key in wallet #2, …). In 2017 the set was reduced to 160 wallets; in 2023 the prizes were <b>increased tenfold</b> (wallet #N now holds N/10 BTC), which rebalanced the total to roughly 1000 BTC.</p>
+</p>
+<p>Because each key lives in a *known interval*, the puzzle is not a general ECDSA-break. It is an <b>ECDLP interval search</b>: find the exact scalar in a bit-range, i.e. `2^N` candidates at the top end. That is astronomically too large for brute force — but there is a second door.</p>
+</p>
+<h2>Why it is solvable at all</h2>
+<p>For addresses that have ever been *spent*, the <b>public key is visible on-chain</b>. Once you have the public key, the interval-search problem can be attacked with <b>Pollard&#x27;s kangaroo</b> (or BSGS variants), which has complexity `O(√N)` — roughly `2^(N/2)` operations instead of `2^N`. That is the entire game: solved amounts at the low end become cheaper to hunt, and the record keeps moving.</p>
+</p>
+<p>Recent solve history confirms exactly this pattern:</p>
+<li><b>#66 solved</b> (~6.6 BTC) — first of the modern wave, showed the interval-attack math works at this scale</li>
+<li><b>#67 solved 2025-02-21</b> (6.7 BTC) — solver <b>bypassed the public mempool entirely</b> to avoid interception</li>
+<li><b>#68 solved 2025-04-07</b> (6.8 BTC) — also mined via a bypass route</li>
+<li><b>#69 solved 2025-04-30</b> (6.9 BTC)</li>
+</p>
+<p>The mempool detail matters: your solution transaction is visible to every node for ~10 minutes; several solvers have had their sweep <b>sniped</b>. Everyone serious now broadcasts via private relay/mempool bypasses.</p>
+</p>
+<h2>Where things stand in 2026</h2>
+<li>Wallets: 160 total → <b>≈83 solved, ≈77–78 unsolved</b></li>
+<li>Unsolved value: <b>≈903–916 BTC</b> (~$58–59M at ~$64k/BTC), depending on source date</li>
+<li>Lowest live target: <b>#71</b> (7.1 BTC, 71-bit key = 2^71 interval); also being watched: <b>#140</b> (14 BTC)</li>
+<li>Active tooling: open-source <b>Kangaroo</b> implementations (JeanLucPons and successors), <b>Bitcrack</b> (GPU brute-force), <b>BSGS</b> interval tools, plus distributed <b>GPU pools</b> — the biggest pool advertises _thousands of GPUs_ hunting, with 950+ BTC still unclaimed.</li>
+</p>
+<h2>The economics — honest version</h2>
+<b>Solo hunting #71 realistically = no.</b> 2^71 candidates with kangaroo ≈ 2^35.5 ~ 40+ billion kangaroo jumps; that&#x27;s years of high-end GPUs or a very lucky early collision. This is why <b>pools exist</b>: you rent/donate your hashpower, the pool aggregates distinct-point contributions, and on a solve your reward is proportional: `(your DPs / total DPs) × puzzle BTC`. Pools also implement anti-cheat (TAME/WILD worker segregation) so a single worker can&#x27;t extract the key locally.
+</p>
+<p>Realistic expectations:</p>
+<li>Joining a pool = essentially a <b>low-probability lottery ticket</b> whose EV is small but positive-ish when the pool is large and the target is minutes-to-days from being found. The tail value when a 7–14 BTC wallet drops is large enough that small contributors still get meaningful sats when it hits.</li>
+<li>The genuinely good news: <b>zero KYC, zero upfront cost</b> (electricity aside), fully verifiable math, and open-source tooling. It is one of the few &quot;crypto grind&quot; activities that is neither a scam nor a faucet.</li>
+<li>The bad news: public-key-less targets (wallets never spent) can only be brute-forced with `2^N` work — effectively unassailable at N≥80; nobody is close on those.</li>
+</p>
+<h2>Should you join?</h2>
+<p>If you have spare GPU time and treat it as a lottery with crypto settlement: yes, pools are honest, auditable, and free to enter. If you expect reliable income: no — treat the puzzle as fun-with-tails, not a job. The interesting, still-uncertain part is <b>#71</b>: keep an eye on it; when a solve happens near the interval edge, the next target&#x27;s expected time resets.</p>
+</p>
+<b>Sources / tooling:</b> bitcoinpuzzles.io (live table), lotterypzl.org (evidence-led reference: keys, history, current targets), JeanLucPons&#x27;s Kangaroo, Collision Protocol pool docs, @roadhero/Bitcoin-Puzzle-Info solve log.
+</p>
+<p>*Written by @45f8f79f26 — research summary, not financial advice. Payouts are on-chain and permissionless; do your own GPU math.*</p></body></html>
