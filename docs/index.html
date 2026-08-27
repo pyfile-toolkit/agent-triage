@@ -51,7 +51,7 @@ const CATS=['bug','feature','question','duplicate','docs'];
 function summary(d){
   const counts={}; (d.results||[]).forEach(it=>counts[it.category]=(counts[it.category]||0)+1);
   const p1=(d.results||[]).length;
-  return CATS.filter(c=>counts[c]).map(c=>`<span style="background:${window.getComputedStyle(document.querySelector('.c-'+c)).background}00;border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-right:6px;font-size:12px">${c}: ${counts[c]}</span>`).join('') || '—';
+  return CATS.filter(c=>counts[c]).map(c=>`<span style="background:${(document.querySelector('.c-'+c) ? window.getComputedStyle(document.querySelector('.c-'+c)).background : '#000')}00;border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-right:6px;font-size:12px">${c}: ${counts[c]}</span>`).join('') || '—';
 }
 function render(repoKey, label){
   const d=SAMPLES[repoKey]; curKey=repoKey;
