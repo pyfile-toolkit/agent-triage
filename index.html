@@ -27,6 +27,8 @@ button.alt{background:var(--card);color:var(--txt);border:1px solid var(--line)}
 .card a{color:var(--acc);text-decoration:none;font-size:12px}
 .note{margin-top:18px;color:var(--muted);font-size:12.5px}
 .link{color:var(--acc)}
+
+.btn-active{outline:2px solid var(--acc);outline-offset:1px;background:var(--card);color:var(--txt)}
 </style>
 </head>
 <body>
@@ -63,8 +65,10 @@ function render(repoKey, label){
   $('#filters').innerHTML = ['all',...CATS].map(c=>`<button class="${c===curFilter?'btn-active':''}" style="${c===curFilter?'outline:2px solid var(--acc);':''}background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px" onclick="setF('${c}', '${repoKey}')">${c}</button>`).join('');
 }
 function setF(c, k){ curFilter=c; render(k, k==='react'?'facebook/react':'typeorm/typeorm'); }
-$('#b-next').onclick = () => { curFilter='all'; render('next','vercel/next.js'); };
-$('#b-typeorm').onclick = () => { curFilter='all'; render('typeorm','typeorm/typeorm'); };
+const REPOS = [['b-next','next','vercel/next.js'],['b-typeorm','typeorm','typeorm/typeorm']];
+function setRepo(id, key, label){ curFilter='all'; REPOS.forEach(([i])=>$('#'+i).classList.toggle('btn-active', i===id)); render(key, label); }
+REPOS.forEach(([id,key,label])=>{ document.getElementById(id).addEventListener('click', ()=>setRepo(id,key,label)); });
+setRepo('b-next','next','vercel/next.js');
 render('next','vercel/next.js');
 </script>
 </body>
